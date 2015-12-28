@@ -1,6 +1,6 @@
 {
   "name": "regexp-like",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "description": "Get a RegExp object from a SQL LIKE string.",
   "repository": {
@@ -14,6 +14,7 @@
   "license": "MIT",
   "devDependencies": {
     "browser-sync": "^2.10.1",
+    "event-stream": "^3.3.2",
     "gulp": "^3.9.0",
     "gulp-eslint": "^1.1.1",
     "gulp-exclude-gitignore": "^1.0.0",

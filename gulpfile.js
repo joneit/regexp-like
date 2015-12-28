@@ -18,6 +18,7 @@ var name     = 'regexp-like',
 gulp.task('lint', lint);
 gulp.task('test', test);
 gulp.task('doc', doc);
+gulp.task('browserify', browserify);
 gulp.task('serve', browserSyncLaunchServer);
 
 gulp.task('build', function(callback) {
@@ -26,7 +27,12 @@ gulp.task('build', function(callback) {
         'lint',
         'test',
         'doc',
+        'browserify',
         callback);
+});
+
+gulp.task('reload', function() {
+    browserSync.reload();
 });
 
 gulp.task('watch', function () {
@@ -56,7 +62,7 @@ function lint() {
         .pipe($$.eslint.failAfterError());
 }
 
-function test(cb) {
+function test() {
     return gulp.src(testDir + 'index.js')
         .pipe($$.mocha({reporter: 'spec'}));
 }
@@ -67,6 +73,19 @@ function doc(cb) {
         console.log(stderr);
         cb(err);
     });
+}
+
+function browserify() {
+    return gulp.src(srcDir + 'index.js')
+        .pipe($$.rename(name + '.js'))
+        .pipe($$.replace(
+            'module.exports =',
+            'window.regExpLIKE ='
+        ))
+        .pipe(gulp.dest(buildDir))
+        .pipe($$.rename(name + '.min.js'))
+        .pipe($$.uglify())
+        .pipe(gulp.dest(buildDir));
 }
 
 function browserSyncLaunchServer() {

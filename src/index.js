@@ -85,10 +85,74 @@ function regExpLIKE(pattern) {
     return new RegExp(parts);
 }
 
-var cache = {};
-regExpLIKE.clearCache = function () { cache = {}; };
-regExpLIKE.cached = function (pattern) {
-    return (cache[pattern] = cache[pattern] || regExpLIKE(pattern));
+var cache, size;
+
+/**
+ * @summary Delete a pattern from the cache; or clear the whole cache.
+ * @param {string} [pattern] - The LIKE pattern to remove from the cache. Fails silently if not found in the cache. If pattern omitted, clears whole cache.
+ */
+(regExpLIKE.clearCache = function (pattern) {
+    if (!pattern) {
+        cache = {};
+        size = 0;
+    } else if (cache[pattern]) {
+        delete cache[pattern];
+        size--;
+    }
+    return size;
+})(); // init the cache
+
+regExpLIKE.getCacheSize = function () { return size; };
+
+/**
+ * @summary Cached version of `regExpLIKE()`.
+ * @desc Cached entries are subject to garbage collection if `keep` is `undefined` or `false` on insertion or `false` on most recent reference. Garbage collection will occur iff `regExpLIKE.cacheMax` is defined and it equals the number of cached patterns. The garbage collector sorts the patterns based on most recent reference; the oldest 10% of the entries are deleted. Alternatively, you can manage the cache yourself to a limited extent (see {@link regeExpLIKE.clearCache|clearCache}).
+ * @param pattern - the LIKE pattern (to be) converted to a RegExp
+ * @param [keep] - If given, changes the keep status for this pattern as follows:
+ * * `true` permanently caches the pattern (not subject to garbage collection) until `false` is given on a subsequent call
+ * * `false` allows garbage collection on the cached pattern
+ * * `undefined` no change to keep status
+ * @returns {RegExp}
+ */
+regExpLIKE.cached = function (pattern, keep) {
+    var item = cache[pattern];
+    if (item) {
+        item.when = new Date().getTime();
+        if (keep !== undefined) {
+            item.keep = keep;
+        }
+    } else {
+        if (size === regExpLIKE.cacheMax) {
+            var age = [], ages = 0, key, i;
+            for (key in cache) {
+                item = cache[key];
+                if (!item.keep) {
+                    for (i = 0; i < ages; ++i) {
+                        if (item.when < age[i].item.when) {
+                            break;
+                        }
+                    }
+                    age.splice(i, 0, { key: key, item: item });
+                    ages++;
+                }
+            }
+            if (!age.length) {
+                return regExpLIKE(pattern); // cache is full!
+            }
+            i = Math.ceil(age.length / 10); // will always be at least 1
+            size -= i;
+            while (i--) {
+                delete cache[age[i].key];
+            }
+        }
+        item = cache[pattern] = {
+            regex: regExpLIKE(pattern),
+            keep: keep,
+            when: new Date().getTime()
+        };
+        size++;
+    }
+    return item.regex;
 };
 
 module.exports = regExpLIKE;
