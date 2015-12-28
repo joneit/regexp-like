@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test CSS Injector</title>
+    <script src="css-injector.js"></script>
+    <script>
+        window.onload = function() {
+            cssInjector([
+                'div {',
+                '    background-color: red;',
+                '    color: yellow;',
+                '}'
+            ], 'test')
+        }
+    </script>
+</head>
+<body>
+    <div>This text should appear in yellow on a red background.</div>
+</body>
+</html>

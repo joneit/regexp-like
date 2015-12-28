@@ -1,0 +1,6 @@
+.DS_Store
+/.idea
+/build/css-injector.js
+/build/css-injector.min.js
+/doc
+/node_modules

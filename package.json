@@ -1,0 +1,29 @@
+{
+  "name": "regexp-like",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "Get a RegExp object from a SQL LIKE string.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joneit/regexp-like"
+  },
+  "scripts": {
+    "test": "gulp test"
+  },
+  "author": "Jonathan Eiten",
+  "license": "MIT",
+  "devDependencies": {
+    "browser-sync": "^2.10.1",
+    "gulp": "^3.9.0",
+    "gulp-eslint": "^1.1.1",
+    "gulp-exclude-gitignore": "^1.0.0",
+    "gulp-load-plugins": "^1.1.0",
+    "gulp-mocha": "^2.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
+    "gulp-uglify": "^1.5.1",
+    "jsdoc": "^3.3.3",
+    "run-sequence": "^1.1.5",
+    "should": "^7.1.1"
+  }
+}
