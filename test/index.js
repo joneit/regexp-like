@@ -120,4 +120,5 @@ describe('regExpLIKE that', function() {
         });
     });
     it('test ignore case option');
+    it('test regExpLIKE.reserve');
 });

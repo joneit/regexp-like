@@ -20,10 +20,6 @@ var // a regex search pattern that matches all the reserved chars of a regex sea
         '\\[\\^?[^-\\]]\\-[^\\]]]' // matches a LIKE range (same syntax as a RegExp range)
     ].join('|') + ')', 'g');
 
-function reserve(s) {
-    return s.replace(reserved, '\\$1');
-}
-
 function regExpLIKE(pattern, ignoreCase) {
     var i, parts;
 
@@ -36,7 +32,7 @@ function regExpLIKE(pattern, ignoreCase) {
         for (i = 0; i < parts.length; ++i) {
             // Escape left brackets (unpaired right brackets are OK)
             if (parts[i][0] === '[') {
-                parts[i] = reserve(parts[i]);
+                parts[i] = regExpLIKE.reserve(parts[i]);
             }
 
             // Make each found pattern matchable by enclosing in parentheses
@@ -61,7 +57,7 @@ function regExpLIKE(pattern, ignoreCase) {
                 case LIKE_WILDCHAR: part = REGEXP_WILDCHAR; break;
                 default:
                     var j = part[1] === '^' ? 2 : 1;
-                    part = '[' + reserve(part.substr(j, part.length - (j + 1))) + ']';
+                    part = '[' + regExpLIKE.reserve(part.substr(j, part.length - (j + 1))) + ']';
             }
             parts[i] = part;
         }
@@ -71,7 +67,7 @@ function regExpLIKE(pattern, ignoreCase) {
 
     // For each surrounding text part, escape reserved regex chars
     for (i = 0; i < parts.length; i += 2) {
-        parts[i] = reserve(parts[i]);
+        parts[i] = regExpLIKE.reserve(parts[i]);
     }
 
     // Join all the interleaved parts
@@ -84,6 +80,10 @@ function regExpLIKE(pattern, ignoreCase) {
     // Return the new regex
     return new RegExp(parts, ignoreCase ? 'i' : undefined);
 }
+
+regExpLIKE.reserve = function (s) {
+    return s.replace(reserved, '\\$1');
+};
 
 var cache, size;
 
