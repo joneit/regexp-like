@@ -119,4 +119,5 @@ describe('regExpLIKE that', function() {
             test('testing([^$-¢]1.25)', /^testing\([\$-¢]1\.25\)$/);
         });
     });
+    it('test ignore case option');
 });

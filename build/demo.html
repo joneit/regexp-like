@@ -6,12 +6,13 @@
     <script src="regexp-like.js"></script>
     <script>
         window.onload = function() {
-            var r = regExpLIKE.cached;
-            document.getElementsByTagName('span')[0].innerHTML = r('_. %').test('A. Lincoln');
+            var r = regExpLIKE.cached,
+                re = r('_. l%', true);
+            document.getElementsByTagName('span')[0].innerHTML = re.test('A. Lincoln');
         }
     </script>
 </head>
 <body>
-    <div>('A. Lincoln' LIKE '_. %') === <span></span></div>
+    <div>('A. Lincoln' LIKE '_. l%') === <span></span></div>
 </body>
 </html>

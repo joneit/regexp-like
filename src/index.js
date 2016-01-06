@@ -24,7 +24,7 @@ function reserve(s) {
     return s.replace(reserved, '\\$1');
 }
 
-function regExpLIKE(pattern) {
+function regExpLIKE(pattern, ignoreCase) {
     var i, parts;
 
     // Find all LIKE patterns
@@ -82,7 +82,7 @@ function regExpLIKE(pattern) {
     if (parts.substr(-2, 2) === REGEXP_WILDCARD) { parts = parts.substr(0, parts.length - 2); } else { parts += '$'; }
 
     // Return the new regex
-    return new RegExp(parts);
+    return new RegExp(parts, ignoreCase ? 'i' : undefined);
 }
 
 var cache, size;
@@ -114,8 +114,14 @@ regExpLIKE.getCacheSize = function () { return size; };
  * * `undefined` no change to keep status
  * @returns {RegExp}
  */
-regExpLIKE.cached = function (pattern, keep) {
-    var item = cache[pattern];
+regExpLIKE.cached = function (keep, pattern, ignoreCase) {
+    if (typeof keep === 'string') {
+        ignoreCase = pattern;
+        pattern = keep;
+        keep = false;
+    }
+    var patternAndCase = pattern + (ignoreCase ? 'i' : 'c'),
+        item = cache[patternAndCase];
     if (item) {
         item.when = new Date().getTime();
         if (keep !== undefined) {
@@ -137,7 +143,7 @@ regExpLIKE.cached = function (pattern, keep) {
                 }
             }
             if (!age.length) {
-                return regExpLIKE(pattern); // cache is full!
+                return regExpLIKE(pattern, ignoreCase); // cache is full!
             }
             i = Math.ceil(age.length / 10); // will always be at least 1
             size -= i;
@@ -145,8 +151,8 @@ regExpLIKE.cached = function (pattern, keep) {
                 delete cache[age[i].key];
             }
         }
-        item = cache[pattern] = {
-            regex: regExpLIKE(pattern),
+        item = cache[patternAndCase] = {
+            regex: regExpLIKE(pattern, ignoreCase),
             keep: keep,
             when: new Date().getTime()
         };
